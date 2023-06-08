@@ -7,7 +7,7 @@ from . import __version__
 
 
 class DTShellConstants:
-    ROOT = "~/.dt-shell/"
+    ROOT = "~/.duckietown/shell/"
     ENV_COMMANDS = "DTSHELL_COMMANDS"
 
     DT1_TOKEN_CONFIG_KEY = "token_dt1"

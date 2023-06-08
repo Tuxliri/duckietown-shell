@@ -6,8 +6,8 @@ from typing import List, Optional, Tuple
 
 from whichcraft import which
 
-from .config import read_shell_config
-from .exceptions import InvalidEnvironment, UserError
+from ..config import read_shell_config
+from ..exceptions import InvalidEnvironment, UserError
 
 
 def running_with_sudo() -> bool:
@@ -29,21 +29,10 @@ As a matter of fact, do not run anything with "sudo" unless instructed to do so.
 def check_docker_environment():
     """Returns docker client"""
 
-    from . import dtslogger
-
-    # dtslogger.debug('Checking docker environment for user %s' % username)
+    from .. import dtslogger
 
     check_executable_exists("docker")
-
     check_user_in_docker_group()
-    #
-    # if on_linux():
-    #
-    #     if username != 'root':
-    #         check_user_in_docker_group()
-    #     # print('checked groups')
-    # else:
-    #     dtslogger.debug('skipping env check because not on Linux')
 
     try:
         import docker
@@ -59,11 +48,6 @@ def check_docker_environment():
     try:
         # noinspection PyUnresolvedReferences
         client = docker.from_env()
-
-        # TODO: why are we doing this? It seems expensive and useless
-        # _containers = client.containers.list(filters=dict(status="running"))
-
-        # dtslogger.debug(json.dumps(client.info(), indent=4))
 
     except Exception as e:
         msg = "I cannot communicate with Docker:\n%s" % e
@@ -97,6 +81,7 @@ def check_user_in_docker_group() -> None:
             msg = 'My groups are %s and "%s" group is %s ' % (my_groups, G, group_id)
             msg += "\n\nNote that when you add a user to a group, you need to login in and out."
             # dtslogger.debug(msg)
+            # TODO: nothing gets done here
 
 
 def get_active_groups(username: Optional[str] = None) -> List[str]:

@@ -30,7 +30,7 @@ class DTCommandAbs(metaclass=ABCMeta):
         line = line.strip()
         parts = [p.strip() for p in line.split(" ")]
         args = [p for p in parts if len(p) > 0]
-        from .utils import undo_replace_spaces
+        from ..utils import undo_replace_spaces
 
         args = list(map(undo_replace_spaces, args))
         word = parts[0]

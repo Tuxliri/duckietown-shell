@@ -1,11 +1,9 @@
 import re
 import subprocess
-import traceback
 from typing import Optional
 
-import termcolor
-
 from . import dtslogger
+from .logging import format_exception
 
 
 def indent(s: str, prefix: str, first: Optional[str] = None) -> str:
@@ -95,22 +93,6 @@ def undo_replace_spaces(x: str) -> str:
     return x.replace(SPACE_TAG, " ")
 
 
-def format_exception(e):
-    return traceback.format_exc()  # None, e)
-
-
-def href(x):
-    return termcolor.colored(x, "blue", None, ["underline"])
-
-
-def dark_yellow(x):
-    return termcolor.colored(x, "yellow")
-
-
-def dark(x):
-    return termcolor.colored(x, attrs=["dark"])
-
-
 def safe_pathname(s: str) -> str:
     return re.sub(r"[^\w\d-]", "_", s)
 
@@ -130,3 +112,7 @@ def run_cmd(cmd, print_output=False, suppress_errors=False):
     if print_output:
         print(stdout)
     return stdout
+
+
+def parse_version(x):
+    return tuple(int(_) for _ in x.split("."))

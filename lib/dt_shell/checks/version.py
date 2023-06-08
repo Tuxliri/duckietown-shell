@@ -9,9 +9,9 @@ import termcolor
 import yaml
 from whichcraft import which
 
-from . import __version__, dtslogger
-from .constants import DTShellConstants
-from .exceptions import CouldNotGetVersion, NoCacheAvailable, URLException
+from .. import __version__, dtslogger
+from ..constants import DTShellConstants
+from ..exceptions import CouldNotGetVersion, NoCacheAvailable, URLException
 
 
 def get_url(url, timeout=3):
@@ -146,7 +146,8 @@ There is an updated duckietown-shell available.
   Available: {available} 
  
 WARNING: We strongly recommend updating to the latest version. ONLY THE LATEST VERSION IS SUPPORTED!
-         If you experience issues, please make sure you're using the latest version before posting questions or issues. 
+         If you experience issues, please make sure you're using the latest version before posting 
+         questions or issues. 
 
 You can update the shell using `pip`. Run the following command:
         pip3 install --no-cache-dir --user -U duckietown-shell

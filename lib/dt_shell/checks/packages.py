@@ -1,11 +1,12 @@
 from typing import cast, List, Optional
 
-from .exceptions import UserError
+from ..exceptions import UserError
+from ..utils import parse_version
 
-__all__ = ["check_package_version", "_get_installed_distributions"]
+__all__ = ["check_package_version", "get_installed_distributions"]
 
 
-def _get_installed_distributions(
+def get_installed_distributions(
     local_only: bool = True,
     user_only: bool = False,
     paths: Optional[List[str]] = None,
@@ -24,27 +25,7 @@ def _get_installed_distributions(
 
 
 def check_package_version(PKG: str, min_version: str):
-    # pip_version = "?"
-    # try:
-    #     # noinspection PyCompatibility
-    #     from pip import __version__
-    #
-    #     pip_version = __version__
-    #     # noinspection PyCompatibility
-    #     from pip._internal.utils.misc import get_installed_distributions
-    # except ImportError:
-    #     msg = f"""
-    #        You need a higher version of "pip".  You have {pip_version}
-    #
-    #        You can install it with a command like:
-    #
-    #            pip install -U pip
-    #
-    #        (Note: your configuration might require a different command.)
-    #        """
-    #     raise UserError(msg)
-
-    installed = _get_installed_distributions()
+    installed = get_installed_distributions()
     pkgs = {_.project_name: _ for _ in installed}
     if PKG not in pkgs:
         msg = f"""
@@ -76,7 +57,3 @@ def check_package_version(PKG: str, min_version: str):
         You might need to use "pip" instead of "pip3".)
        """
         raise UserError(msg)
-
-
-def parse_version(x):
-    return tuple(int(_) for _ in x.split("."))

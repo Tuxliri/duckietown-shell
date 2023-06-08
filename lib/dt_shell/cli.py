@@ -11,11 +11,11 @@ from os.path import exists, isfile, join
 from typing import Mapping, Optional, Sequence, List
 
 from . import dtslogger
-from .commands_ import (
-    _get_commands,
-    _init_commands,
-    _ensure_commands_exist,
-    _ensure_commands_updated,
+from .commands import (
+    get_commands,
+    init_commands,
+    ensure_commands_exist,
+    ensure_commands_updated,
     InvalidRemote,
 )
 from .config import (
@@ -26,11 +26,11 @@ from .config import (
     write_shell_config,
 )
 from .constants import DEBUG, DTShellConstants, INTRO
-from .dt_command_abs import DTCommandAbs
-from .dt_command_placeholder import DTCommandPlaceholder
+from .commands import DTCommandAbs
+from .commands import DTCommandPlaceholder
 from .exceptions import CommandsLoadingException, UserError
-from .logging import dts_print
-from .version_check import check_if_outdated
+from .logging import dts_print, format_exception
+from .checks.version import check_if_outdated
 
 
 BILLBOARDS_VERSION: str = "v1"
@@ -40,6 +40,7 @@ BILLBOARDS_VERSION: str = "v1"
 class CommandsInfo:
     commands_path: str  # commands path
     leave_alone: bool  # whether to leave this alone (local)
+
 
 
 def get_local_commands_info() -> CommandsInfo:
@@ -68,7 +69,6 @@ prompt = "dts> "
 class DTShell(Cmd):
     errors_loading = []
 
-    # config = {}
     commands = {}
     core_commands = [
         "commands",
@@ -117,7 +117,7 @@ class DTShell(Cmd):
                 raise Exception(msg)
             dtslogger.warning(msg)
             try:
-                _init_commands(commands_path, self.repo_info)
+                init_commands(commands_path, self.repo_info)
             except InvalidRemote as e:
                 msg = "I could not initialize the commands."
                 raise CommandsLoadingException(msg) from e
@@ -170,7 +170,7 @@ class DTShell(Cmd):
                 if hasattr(DTShell, a + command):
                     delattr(DTShell, a + command)
         # re-install commands
-        self.commands = _get_commands(self.commands_path)
+        self.commands = get_commands(self.commands_path)
         if self.commands is None:
             dtslogger.error("No commands found.")
             self.commands = {}
@@ -208,7 +208,7 @@ class DTShell(Cmd):
         if command_name in self.core_commands:
             return True
         # get list of all commands
-        res = _get_commands(self.commands_path, all_commands=True)
+        res = get_commands(self.commands_path, all_commands=True)
         present = res.keys() if res is not None else []
         # enable if possible
         if command_name in present:
@@ -220,7 +220,7 @@ class DTShell(Cmd):
         if command_name in self.core_commands:
             return False
         # get list of all commands
-        res = _get_commands(self.commands_path, all_commands=True)
+        res = get_commands(self.commands_path, all_commands=True)
         present = res.keys() if res is not None else []
         # enable if possible
         if command_name in present:
@@ -250,10 +250,7 @@ class DTShell(Cmd):
                 raise
             except BaseException as e:
                 # error_loading = True
-                from .utils import format_exception
-
                 se = format_exception(e)
-
                 msg = "Cannot load command class %r (package=%r, command=%r): %s" % (
                     spec,
                     package,
@@ -353,9 +350,9 @@ class DTShell(Cmd):
 
     def update_commands(self) -> bool:
         # check that the repo is initialized in the commands path
-        _ensure_commands_exist(self.commands_path, self.repo_info)
+        ensure_commands_exist(self.commands_path, self.repo_info)
         # update the commands if they are outdated
-        return _ensure_commands_updated(self.commands_path, self.repo_info)
+        return ensure_commands_updated(self.commands_path, self.repo_info)
 
 
 def _touch(path: str) -> None:

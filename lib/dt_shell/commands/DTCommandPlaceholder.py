@@ -1,4 +1,4 @@
-from .dt_command_abs import DTCommandAbs
+from .DTCommandAbs import DTCommandAbs
 
 __all__ = ["DTCommandPlaceholder"]
 

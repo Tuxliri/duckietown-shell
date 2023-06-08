@@ -2,18 +2,18 @@ import glob
 import os
 from typing import Dict, Optional
 
-from . import dtslogger
-from .config import remoteurl_from_RepoInfo, RepoInfo
-from .exceptions import UserError
-from .update_utils import update_cached_commands
-from .utils import run_cmd
+from .. import dtslogger
+from ..config import remoteurl_from_RepoInfo, RepoInfo
+from ..exceptions import UserError
+from ..update_utils import update_cached_commands
+from ..utils import run_cmd
 
 
 class InvalidRemote(Exception):
     pass
 
 
-def _init_commands(commands_path: str, repo_info: RepoInfo) -> bool:
+def init_commands(commands_path: str, repo_info: RepoInfo) -> bool:
     """Raises InvalidRemote if it cannot find it"""
     remote_url = remoteurl_from_RepoInfo(repo_info)
     try:
@@ -26,20 +26,20 @@ def _init_commands(commands_path: str, repo_info: RepoInfo) -> bool:
         return False
 
 
-def _ensure_commands_exist(commands_path: str, repo_info: RepoInfo):
+def ensure_commands_exist(commands_path: str, repo_info: RepoInfo):
     # clone the commands if necessary
     if not os.path.exists(commands_path):
-        _init_commands(commands_path, repo_info)
+        init_commands(commands_path, repo_info)
     # make sure the commands exist
     if not os.path.exists(commands_path):
         raise UserError(f"Commands not found at '{commands_path}'.")
 
 
-def _ensure_commands_updated(commands_path: str, repo_info: RepoInfo) -> bool:
+def ensure_commands_updated(commands_path: str, repo_info: RepoInfo) -> bool:
     return update_cached_commands(commands_path, repo_info)
 
 
-def _get_commands(path: str, lvl=0, all_commands=False) -> Optional[Dict[str, object]]:
+def get_commands(path: str, lvl=0, all_commands=False) -> Optional[Dict[str, object]]:
     entries = glob.glob(os.path.join(path, "*"))
     files = [os.path.basename(e) for e in entries if os.path.isfile(e)]
     dirs = [e for e in entries if os.path.isdir(e) and (lvl > 0 or os.path.basename(e) != "lib")]
@@ -55,7 +55,7 @@ def _get_commands(path: str, lvl=0, all_commands=False) -> Optional[Dict[str, ob
     # check subcommands
     subcmds = {}
     for d in dirs:
-        f = _get_commands(d, lvl + 1, all_commands)
+        f = get_commands(d, lvl + 1, all_commands)
         if f is not None:
             subcmds[os.path.basename(d)] = f
     # return

@@ -11,10 +11,10 @@ import yaml
 
 from . import __version__, dtslogger
 from .cli import DTShell, get_local_commands_info
-from .cli_options import get_cli_options
+from .options import get_cli_options
 from .config import get_shell_config_default, read_shell_config, write_shell_config
 from .constants import ALLOWED_BRANCHES
-from .env_checks import abort_if_running_with_sudo
+from .checks.environment import abort_if_running_with_sudo
 from .exceptions import (
     CommandsLoadingException,
     ConfigInvalid,
@@ -22,9 +22,9 @@ from .exceptions import (
     InvalidEnvironment,
     UserError,
 )
-from .logging import dts_print
-from .utils import format_exception, replace_spaces
-from .package_version_check import _get_installed_distributions
+from .logging import dts_print, format_exception
+from .utils import replace_spaces
+from .checks.packages import get_installed_distributions
 
 
 class OtherVersions:
@@ -32,7 +32,7 @@ class OtherVersions:
 
 
 def cli_main() -> None:
-    from .col_logging import setup_logging_color
+    from .logging import setup_logging_color
 
     setup_logging_color()
 
@@ -80,7 +80,7 @@ def print_version_info() -> None:
     }
 
     try:
-        installed = _get_installed_distributions()
+        installed = get_installed_distributions()
         pkgs = {_.project_name: _.version for _ in installed}
         for pkg_name, pkg_version in pkgs.items():
             include = (

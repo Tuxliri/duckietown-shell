@@ -3,7 +3,7 @@ import os
 import time
 
 from . import dtslogger
-from . import version_check
+from .checks.version import get_url
 from .config import RepoInfo
 from .constants import CHECK_CMDS_UPDATE_MINS
 from .exceptions import UserError
@@ -45,7 +45,7 @@ def commands_need_update(commands_path: str, repo_info: RepoInfo) -> bool:
             repo_info.branch,
         )
         try:
-            content = version_check.get_url(remote_url)
+            content = get_url(remote_url)
             data = json.loads(content)
             remote_sha = data["commit"]["sha"]
         except Exception as e:
