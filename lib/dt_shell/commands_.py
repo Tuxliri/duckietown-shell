@@ -1,14 +1,10 @@
 import glob
-import json
 import os
-import time
-from os.path import getmtime
 from typing import Dict, Optional
 
 from . import dtslogger
 from .config import remoteurl_from_RepoInfo, RepoInfo
 from .exceptions import UserError
-from .logging import dts_print
 from .update_utils import update_cached_commands
 from .utils import run_cmd
 
@@ -19,10 +15,10 @@ class InvalidRemote(Exception):
 
 def _init_commands(commands_path: str, repo_info: RepoInfo) -> bool:
     """Raises InvalidRemote if it cannot find it"""
+    remote_url = remoteurl_from_RepoInfo(repo_info)
     try:
         dtslogger.info("Downloading Duckietown shell commands in %s ..." % commands_path)
         # clone the repo
-        remote_url = remoteurl_from_RepoInfo(repo_info)
         run_cmd(["git", "clone", "-b", repo_info.branch, "--recurse-submodules", remote_url, commands_path])
     except Exception as e:
         # Excepts as InvalidRemote
@@ -30,7 +26,7 @@ def _init_commands(commands_path: str, repo_info: RepoInfo) -> bool:
         return False
 
 
-def _ensure_commands_exist(commands_path: str, repo_info: RepoInfo) -> bool:
+def _ensure_commands_exist(commands_path: str, repo_info: RepoInfo):
     # clone the commands if necessary
     if not os.path.exists(commands_path):
         _init_commands(commands_path, repo_info)

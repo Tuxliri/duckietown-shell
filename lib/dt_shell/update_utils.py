@@ -2,9 +2,9 @@ import json
 import os
 import time
 
-from . import dtslogger, version_check
+from . import dtslogger
 from . import version_check
-from .config import remoteurl_from_RepoInfo, RepoInfo
+from .config import RepoInfo
 from .constants import CHECK_CMDS_UPDATE_MINS
 from .exceptions import UserError
 from .utils import run_cmd

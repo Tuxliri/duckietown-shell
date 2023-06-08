@@ -65,7 +65,7 @@ def read_shell_config() -> ShellConfig:
 
 
 def write_shell_config(shell_config: ShellConfig) -> None:
-    """Saves the she"""
+    """Saves the shell config file"""
     config_file = get_shell_config_file()
     write_shell_config_to_file(shell_config, config_file)
 
