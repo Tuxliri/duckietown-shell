@@ -1,3 +1,4 @@
+import re
 import subprocess
 import traceback
 from typing import Optional
@@ -29,8 +30,8 @@ def indent(s: str, prefix: str, first: Optional[str] = None) -> str:
 
 
 def raise_wrapped(etype, e, msg, compact=False, exc=None, **kwargs):
-    """Raises an exception of type etype by wrapping
-    another exception "e" with its backtrace and adding
+    """Raises an exception of type 'etype' by wrapping
+    another exception 'e' with its backtrace and adding
     the objects in kwargs as formatted by format_obs.
 
     if compact = False, write the whole traceback, otherwise just str(e).
@@ -108,6 +109,10 @@ def dark_yellow(x):
 
 def dark(x):
     return termcolor.colored(x, attrs=["dark"])
+
+
+def safe_pathname(s: str) -> str:
+    return re.sub(r"[^\w\d-]", "_", s)
 
 
 def run_cmd(cmd, print_output=False, suppress_errors=False):
